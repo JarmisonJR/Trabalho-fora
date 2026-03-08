@@ -1,0 +1,26 @@
+{
+  "level": [
+    {
+      "id": 1,
+      "title":" O Despertar",
+      "grid": [
+        [1, 0, 2]
+      ],
+      "objective": "Chegue ao 2",
+      "maxMoves": 5,
+      "difficulty": "Easy"
+    },
+    {
+      "id": 2,
+      "title": "Labirinto Simples",
+      "grid": [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 2]
+      ],
+      "objective": "Desvie do obstáculo (-1)",
+      "maxMoves": 10,
+      "difficulty": "Medium"
+    }
+  ]
+}
