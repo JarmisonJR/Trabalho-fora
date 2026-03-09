@@ -3,26 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle Pro</title>
+    <title>Neon Puzzle Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="game-container">
-        <div class="ui-panel">
-            <h1 id="level-title">Carregando...</h1>
-            <p>Movimentos: <span id="move-count">0</span></p>
-        </div>
-
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-
-        <div class="ui-panel" style="margin-top: 20px;">
-            <small>Use as setas do teclado para mover</small>
-        </div>
+    <div id="ui">
+        <h1 id="lvlName">Nível 1</h1>
+        <div class="stats">Movimentos: <span id="moves">0</span></div>
     </div>
     
-    <script src="main.js"></script>
-<script scr="canvas.js"></script>
-    <script src="brain.js"></script>
+    <canvas id="gameCanvas" width="480" height="480"></canvas>
+
+    <div class="instructions">Use as setas do teclado para navegar</div>
+
+    <script src="script.js"></script>
 </body>
 </html>
