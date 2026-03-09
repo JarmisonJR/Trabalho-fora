@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle Pro | GitHub Edition</title>
-    
-    <link rel="stylesheet" href="style.css">
+    <title>Puzzle Pro</title>
+    <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
 
-    <div id="game-container" class="fade-in">
+    <div id="game-container">
         <div class="ui-panel">
-            <h1 id="level-title">Fase 1</h1>
-            <p>Movimentos: <span id="move-count">0</span> / <span id="max-moves">--</span></p>
+            <h1 id="level-title">Carregando...</h1>
+            <p>Movimentos: <span id="move-count">0</span></p>
         </div>
 
         <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -22,8 +21,7 @@
         </div>
     </div>
     
-    <script src="brain.js"></script>
-    <script src="canvas.js"></script>
-    <script src="main.js"></script>
-   </body>
+    <script src="src/main.js"></script>
+
+</body>
 </html>
