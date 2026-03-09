@@ -95,23 +95,4 @@ const levels = [
         [-1,-1,-1,-1,-1,-1,-1,-1]
     ]}
 ];
-// Lógica da Tela de Início
-const startScreen = document.getElementById('start-screen');
-const gameContainer = document.getElementById('game-container');
-const startButton = document.getElementById('start-button');
 
-startButton.addEventListener('click', () => {
-    // Esconde o menu com uma transição simples
-    startScreen.style.display = 'none';
-    
-    // Mostra o jogo
-    gameContainer.style.display = 'flex';
-    gameContainer.style.flexDirection = 'column';
-    gameContainer.style.alignItems = 'center';
-
-    // Inicia a primeira fase
-    loadLevel(currentLevel);
-});
-
-// Remova a chamada loadLevel(currentLevel) que estava solta no final do arquivo,
-// pois agora ela só deve rodar após o clique no botão.
