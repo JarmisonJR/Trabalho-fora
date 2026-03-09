@@ -35,6 +35,101 @@ font-size: 2rem;
   font-weight: bold;
   color: #55efc4;
 }
+/* 1. Reset e Definições de Cores */
+:root {
+    --bg-color: #1a1a2e;
+    --panel-color: #16213e;
+    --accent-color: #4ecca3;
+    --player-color: #00d2ff;
+    --target-color: #ff4d4d;
+    --text-color: #e9ecef;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle, #232345 1px, transparent 1px);
+    background-size: 30px 30px; /* Efeito de grade sutil no fundo */
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 2. Container Principal */
+#game-container {
+    background: var(--panel-color);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+/* 3. Painel de Texto (UI) */
+.ui-panel {
+    margin-bottom: 1.5rem;
+}
+
+#level-title {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #fff, var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stats {
+    font-size: 1.1rem;
+    color: #94a3b8;
+}
+
+#move-count {
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+/* 4. O Canvas (Onde a mágica acontece) */
+canvas {
+    background: #0f3460;
+    border-radius: 12px;
+    border: 3px solid #0f3460;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    display: block;
+    margin: 0 auto;
+    /* Faz o canvas parecer um monitor antigo/neon */
+    filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.2));
+}
+
+/* 5. Instruções Inferiores */
+.instructions {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* 6. Animação de Entrada */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#game-container {
+    animation: slideUp 0.6s ease-out;
+}
 
 canvas {
   background: #ffffff;
