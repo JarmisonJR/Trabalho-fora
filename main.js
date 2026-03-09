@@ -1,66 +1,114 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const levelTitle = document.getElementById('level-title');
-const moveDisplay = document.getElementById('move-count');
+const TILE = 60;
 
-// Configuração simplificada
-let playerPos = { x: 1, y: 1 };
-const TILE_SIZE = 80;
-
-// Grade de teste: 1 = Jogador, 2 = Objetivo, -1 = Parede, 0 = Caminho
-let grid = [
-    [-1, -1, -1, -1, -1],
-    [-1,  1,  0,  0, -1],
-    [-1,  0, -1,  0, -1],
-    [-1,  0,  0,  2, -1],
-    [-1, -1, -1, -1, -1]
+const levels = [
+    { name: "O Início", map: [
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1, 1, 0, 0, 0, 0, 2,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1]
+    ]},
+    { name: "Zigue-Zague", map: [
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1, 1, 0,-1, 0, 0, 0,-1],
+        [-1,-1, 0,-1, 0,-1, 0,-1],
+        [-1, 2, 0, 0, 0,-1, 0,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1]
+    ]},
+    { name: "O Labirinto", map: [
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1, 1, 0, 0, 0,-1, 2,-1],
+        [-1, 0,-1,-1, 0,-1, 0,-1],
+        [-1, 0, 0, 0, 0, 0, 0,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1]
+    ]}
 ];
 
-function draw() {
-    // Limpa o fundo
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+let currentLevel = 0;
+let player = { x: 0, y: 0 };
+let moveCount = 0;
+let grid = [];
 
+function loadLevel(idx) {
+    if(idx >= levels.length) {
+        alert("🎉 Incrível! Você dominou todos os níveis!");
+        currentLevel = 0;
+        idx = 0;
+    }
+    const lvl = levels[idx];
+    document.getElementById('lvlName').innerText = lvl.name;
+    grid = JSON.parse(JSON.stringify(lvl.map));
+    moveCount = 0;
+    document.getElementById('moves').innerText = moveCount;
+
+    for(let y=0; y<grid.length; y++) {
+        for(let x=0; x<grid[y].length; x++) {
+            if(grid[y][x] === 1) player = {x, y};
+        }
+    }
+    draw();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     grid.forEach((row, y) => {
         row.forEach((cell, x) => {
-            const px = x * TILE_SIZE;
-            const py = y * TILE_SIZE;
-
-            if (cell === -1) { // Parede
-                ctx.fillStyle = "#2d3436";
-                ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
-            } else if (cell === 1) { // Jogador
-                ctx.fillStyle = "#0984e3";
-                ctx.fillRect(px + 10, py + 10, TILE_SIZE - 20, TILE_SIZE - 20);
-            } else if (cell === 2) { // Objetivo
-                ctx.fillStyle = "#00b894";
-                ctx.beginPath();
-                ctx.arc(px + TILE_SIZE/2, py + TILE_SIZE/2, 20, 0, Math.PI * 2);
-                ctx.fill();
+            const px = x * TILE; const py = y * TILE;
+            
+            if(cell === -1) { 
+                ctx.fillStyle = "#1e293b";
+                ctx.fillRect(px, py, TILE, TILE);
+                ctx.strokeStyle = "#334155";
+                ctx.strokeRect(px+2, py+2, TILE-4, TILE-4);
+            } else if(cell === 1) { 
+                drawNeonRect(px+10, py+10, TILE-20, "#00d2ff");
+            } else if(cell === 2) { 
+                drawNeonCircle(px+TILE/2, py+TILE/2, 12, "#4ecca3");
             }
         });
     });
 }
 
-// Movimentação
+function drawNeonRect(x, y, size, color) {
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x, y, size, size, 8);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+}
+
+function drawNeonCircle(x, y, rad, color) {
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, rad, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+}
+
 window.addEventListener('keydown', (e) => {
-    let dx = 0, dy = 0;
-    if (e.key === "ArrowUp") dy = -1;
-    if (e.key === "ArrowDown") dy = 1;
-    if (e.key === "ArrowLeft") dx = -1;
-    if (e.key === "ArrowRight") dx = 1;
+    let nx = player.x, ny = player.y;
+    if(e.key === "ArrowUp") ny--;
+    if(e.key === "ArrowDown") ny++;
+    if(e.key === "ArrowLeft") nx--;
+    if(e.key === "ArrowRight") nx++;
 
-    const nextX = playerPos.x + dx;
-    const nextY = playerPos.y + dy;
-
-    if (grid[nextY][nextX] !== -1) {
-        grid[playerPos.y][playerPos.x] = 0;
-        playerPos = { x: nextX, y: nextY };
-        grid[playerPos.y][playerPos.x] = 1;
+    if(grid[ny] && grid[ny][nx] !== undefined && grid[ny][nx] !== -1) {
+        if(grid[ny][nx] === 2) {
+            currentLevel++;
+            setTimeout(() => loadLevel(currentLevel), 100);
+            return;
+        }
+        grid[player.y][player.x] = 0;
+        player = {x: nx, y: ny};
+        grid[player.y][player.x] = 1;
+        moveCount++;
+        document.getElementById('moves').innerText = moveCount;
         draw();
     }
 });
 
-// Força o primeiro desenho
-levelTitle.innerText = "Fase de Teste";
-draw();
+loadLevel(currentLevel);
