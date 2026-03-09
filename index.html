@@ -1,18 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Puzzle Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <div id="start-screen">
-        <h1>NEON PUZZLE PRO</h1>
-        <p>Desafie sua mente no labirinto de luz</p>
-        <button id="start-button">INICIAR JOGO</button>
-        <div class="controls-hint">Use as setas ↑ ↓ ← → para jogar</div>
+    <div id="ui">
+        <h1 id="lvlName">Nível 1</h1>
+        <div class="stats">Movimentos: <span id="moves">0</span></div>
     </div>
+    
+    <canvas id="gameCanvas" width="480" height="480"></canvas>
 
-    <div id="game-container" style="display: none;">
-        <div id="ui">
-            <h1 id="lvlName">Nível 1</h1>
-            <div class="stats">Movimentos: <span id="moves">0</span></div>
-        </div>
-        <canvas id="gameCanvas" width="480" height="480"></canvas>
-    </div>
+    <div class="instructions">Use as setas do teclado para navegar</div>
 
-    <script src="main.js"></script>
+    <script src="script.js"></script>
 </body>
+</html>
