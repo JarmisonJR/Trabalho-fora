@@ -188,3 +188,34 @@ window.addEventListener('keydown', (e) => {
 });
 
 loadLevel(currentLevel);
+function loadLevel(idx) {
+    if(idx >= levels.length) {
+        alert("🎉 Incrível! Você dominou todos os níveis!");
+        currentLevel = 0;
+        idx = 0;
+    }
+    
+    const lvl = levels[idx];
+    document.getElementById('lvlName').innerText = lvl.name;
+    grid = JSON.parse(JSON.stringify(lvl.map));
+    moveCount = 0;
+    document.getElementById('moves').innerText = moveCount;
+
+    // --- AJUSTE DINÂMICO DE TAMANHO ---
+    // Define a largura baseada no número de colunas
+    canvas.width = grid[0].length * TILE;
+    // Define a altura baseada no número de linhas
+    canvas.height = grid.length * TILE;
+
+    for(let y=0; y<grid.length; y++) {
+        for(let x=0; x<grid[y].length; x++) {
+            if(grid[y][x] === 1) player = {x, y};
+        }
+    }
+    draw();
+}
+// Exemplo de lógica opcional dentro do loadLevel:
+if (grid[0].length > 10) {
+    // Se a fase for larga, diminui o tamanho do bloco para caber na tela
+    // TILE = 40; 
+}
