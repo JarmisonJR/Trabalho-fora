@@ -1,1 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Pro | GitHub Edition</title>
+    
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
 
+    <div id="game-container" class="fade-in">
+        <div class="ui-panel">
+            <h1 id="level-title">Fase 1</h1>
+            <p>Movimentos: <span id="move-count">0</span> / <span id="max-moves">--</span></p>
+        </div>
+
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+        <div class="ui-panel" style="margin-top: 20px;">
+            <small>Use as setas do teclado para mover</small>
+        </div>
+    </div>
+    
+    <script src="src/core/GameEngine.js"></script>
+    <script src="src/core/Renderer.js"></script>
+    <script src="src/main.js"></script> </body>
+</html>
