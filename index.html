@@ -1,20 +1,50 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Puzzle Pro</title>
+    <title>Meu Organizador Pessoal</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="ui">
-        <h1 id="lvlName">Nível 1</h1>
-        <div class="stats">Movimentos: <span id="moves">0</span></div>
-    </div>
-    
-    <canvas id="gameCanvas" width="480" height="480"></canvas>
 
-    <div class="instructions">Use as setas do teclado para navegar</div>
+    <header class="app-header">
+        <h1><i class="fa-solid fa-calendar-check"></i> Rotina & Foco</h1>
+        <p id="current-date"></p>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <section class="dash-column">
+            <h2><i class="fa-solid fa-clock"></i> Horários do Dia</h2>
+            <form id="form-compromisso" class="quick-form">
+                <input type="time" id="comp-hora" required>
+                <input type="text" id="comp-titulo" placeholder="Novo compromisso..." required>
+                <button type="submit"><i class="fa-solid fa-plus"></i></button>
+            </form>
+            <div id="lista-compromissos" class="list-container">
+                </div>
+        </section>
+
+        <section class="dash-column">
+            <h2><i class="fa-solid fa-list-check"></i> Tarefas & Hábitos</h2>
+            <form id="form-tarefa" class="quick-form">
+                <input type="text" id="tarefa-texto" placeholder="O que precisa ser feito?" required>
+                <button type="submit"><i class="fa-solid fa-plus"></i></button>
+            </form>
+            <div id="lista-tarefas" class="list-container">
+                </div>
+        </section>
+
+        <section class="dash-column">
+            <h2><i class="fa-solid fa-note-sticky"></i> Bloco de Notas Rápido</h2>
+            <p class="subtitle">Salva automaticamente ao digitar</p>
+            <textarea id="scratchpad" placeholder="Digite insights, ideias ou lembretes rápidos aqui..."></textarea>
+            <div id="status-salvamento" class="status-info">Aguardando alterações...</div>
+        </section>
+
+    </main>
 
     <script src="main.js"></script>
 </body>
