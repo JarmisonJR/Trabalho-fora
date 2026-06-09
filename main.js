@@ -1,99 +1,158 @@
+let dados = {
+    compromissos: [],
+    tarefas: [],
+    nota_rapida: "",
+    diario: "" // Novo campo adicionado
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Exibir data atual por extenso
+    // Configura data atual por extenso
     const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-BR', opcoes);
 
-    // Carregar dados iniciais do servidor
-    carregarDados();
+    // Carregar dados salvos no LocalStorage
+    const dadosSalvos = localStorage.getItem('meu_espaco_dados');
+    if (dadosSalvos) {
+        dados = JSON.parse(dadosSalvos);
+    }
 
-    // Eventos dos formulários
-    document.getElementById('form-compromisso').addEventListener('submit', adicioneCompromisso);
-    document.getElementById('form-tarefa').addEventListener('submit', adicionarTarefa);
+    atualizarTela();
+    inicializarPlayerMusica();
 
-    // Evento de digitação no Bloco de Notas (com auto-save temporizado)
-    let timeoutSalvar;
-    const scratchpad = document.getElementById('scratchpad');
-    const statusText = document.getElementById('status-salvamento');
+    // Ouvintes de eventos
+    document.getElementById('form-compromisso').addEventListener('submit', salvarCompromisso);
+    document.getElementById('form-tarefa').addEventListener('submit', salvarTarefa);
 
-    scratchpad.addEventListener('input', () => {
-        statusText.innerText = "Digitando...";
-        clearTimeout(timeoutSalvar);
-        timeoutSalvar = setTimeout(() => {
-            statusText.innerText = "Salvando...";
-            fetch('/api/nota', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nota: scratchpad.value })
-            })
-            .then(res => res.json())
-            .then(() => statusText.innerText = "Alterações salvas!")
-            .catch(() => statusText.innerText = "Erro ao salvar automaticamente.");
-        }, 1000); // Salva 1 segundo após o usuário parar de digitar
-    });
+    // Auto-save inteligente com Debounce para Notas e Diário
+    configurarAutoSave('scratchpad', 'nota_rapida', 'scratch-status');
+    configurarAutoSave('diary-input', 'diario', 'diary-status');
 });
 
-async function carregarDados() {
-    try {
-        const response = await fetch('/api/dados');
-        const dados = await response.json();
-        
-        // Renderizar compromissos
-        const listaComp = document.getElementById('lista-compromissos');
-        listaComp.innerHTML = '';
-        dados.compromissos.forEach(c => {
-            listaComp.innerHTML += `
-                <div class="card">
-                    <span class="time-tag">${c.hora}</span>
-                    <span>${c.titulo}</span>
-                </div>
-            `;
-        });
-
-        // Renderizar tarefas
-        const listaTar = document.getElementById('lista-tarefas');
-        listaTar.innerHTML = '';
-        dados.tarefas.forEach(t => {
-            listaTar.innerHTML += `
-                <div class="card">
-                    <input type="checkbox" ${t.concluida ? 'checked' : ''} disabled>
-                    <span style="${t.concluida ? 'text-decoration: line-through; color: #8d8d99;' : ''}">${t.texto}</span>
-                </div>
-            `;
-        });
-
-        // Preencher bloco de notas
-        document.getElementById('scratchpad').value = dados.nota_rapida;
-
-    } catch (error) {
-        console.error("Erro ao buscar dados do servidor:", error);
-    }
+function salvarNoNavegador() {
+    localStorage.setItem('meu_espaco_dados', JSON.stringify(dados));
 }
 
-async function adicioneCompromisso(e) {
+// Configura o salvamento automático conforme digita
+function configurarAutoSave(textareaId, chaveDado, statusId) {
+    const textarea = document.getElementById(textareaId);
+    const statusText = document.getElementById(statusId);
+    let timeout;
+
+    textarea.addEventListener('input', () => {
+        statusText.innerText = "Digitando...";
+        clearTimeout(timeout);
+        
+        timeout = setTimeout(() => {
+            dados[chaveDado] = textarea.value;
+            salvarNoNavegador();
+            statusText.innerText = "Salvo localmente";
+        }, 600);
+    });
+}
+
+// CONTROLE DO PLAYER DE MÚSICA
+function inicializarPlayerMusica() {
+    const audio = document.getElementById('bg-audio');
+    const select = document.getElementById('ambient-music');
+    const btnPlay = document.getElementById('btn-play-music');
+    const icone = btnPlay.querySelector('i');
+
+    select.addEventListener('change', () => {
+        if (select.value) {
+            audio.src = select.value;
+            if (icone.classList.contains('fa-pause')) {
+                audio.play();
+            }
+        } else {
+            audio.pause();
+            icone.className = 'fa-solid fa-play';
+        }
+    });
+
+    btnPlay.addEventListener('click', () => {
+        if (!select.value) {
+            alert("Escolha uma música na lista primeiro!");
+            return;
+        }
+
+        if (audio.paused) {
+            audio.play();
+            icone.className = 'fa-solid fa-pause';
+        } else {
+            audio.pause();
+            icone.className = 'fa-solid fa-play';
+        }
+    });
+}
+
+function atualizarTela() {
+    // Renderizar Horários
+    const listaComp = document.getElementById('lista-compromissos');
+    listaComp.innerHTML = '';
+    dados.compromissos.sort((a, b) => a.hora.localeCompare(b.hora));
+    dados.compromissos.forEach((c, index) => {
+        listaComp.innerHTML += `
+            <div class="card">
+                <span class="time-tag">${c.hora}</span>
+                <span style="flex: 1;">${c.titulo}</span>
+                <i class="fa-solid fa-trash-can" style="color: #7a7a9a; cursor: pointer;" onclick="deletarCompromisso(${index})"></i>
+            </div>
+        `;
+    });
+
+    // Renderizar Tarefas
+    const listaTar = document.getElementById('lista-tarefas');
+    listaTar.innerHTML = '';
+    dados.tarefas.forEach((t, index) => {
+        listaTar.innerHTML += `
+            <div class="card">
+                <input type="checkbox" ${t.concluida ? 'checked' : ''} onclick="alternarTarefa(${index})">
+                <span style="flex: 1; ${t.concluida ? 'text-decoration: line-through; color: #7a7a9a;' : ''}">${t.texto}</span>
+                <i class="fa-solid fa-trash-can" style="color: #7a7a9a; cursor: pointer;" onclick="deletarTarefa(${index})"></i>
+            </div>
+        `;
+    });
+
+    // Inserir Textos Salvos
+    document.getElementById('scratchpad').value = dados.nota_rapida || "";
+    document.getElementById('diary-input').value = dados.diario || "";
+}
+
+function salvarCompromisso(e) {
     e.preventDefault();
     const hora = document.getElementById('comp-hora').value;
     const titulo = document.getElementById('comp-titulo').value;
 
-    await fetch('/api/compromissos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hora, titulo })
-    });
-
+    dados.compromissos.push({ hora, titulo });
+    salvarNoNavegador();
+    atualizarTela();
     document.getElementById('comp-titulo').value = '';
-    carregarDados();
 }
 
-async function adicionarTarefa(e) {
+function salvarTarefa(e) {
     e.preventDefault();
     const texto = document.getElementById('tarefa-texto').value;
 
-    await fetch('/api/tarefas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto })
-    });
-
+    dados.tarefas.push({ texto, concluida: false });
+    salvarNoNavegador();
+    atualizarTela();
     document.getElementById('tarefa-texto').value = '';
-    carregarDados();
+}
+
+function alternarTarefa(index) {
+    dados.tarefas[index].concluida = !dados.tarefas[index].concluida;
+    salvarNoNavegador();
+    atualizarTela();
+}
+
+function deletarCompromisso(index) {
+    dados.compromissos.splice(index, 1);
+    salvarNoNavegador();
+    atualizarTela();
+}
+
+function deletarTarefa(index) {
+    dados.tarefas.splice(index, 1);
+    salvarNoNavegador();
+    atualizarTela();
 }
